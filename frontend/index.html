@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>MASTER.AS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+    }
+
+    header {
+      background: #111;
+      color: #00ffcc;
+      text-align: center;
+      padding: 15px;
+      font-weight: bold;
+    }
+
+    #chat {
+      height: 70vh;
+      overflow-y: auto;
+      padding: 10px;
+      background: #111;
+    }
+
+    .msg-user {
+      text-align: right;
+      color: #00ffcc;
+      margin: 8px;
+    }
+
+    .msg-bot {
+      text-align: left;
+      color: #fff;
+      margin: 8px;
+    }
+
+    footer {
+      display: flex;
+      padding: 10px;
+      background: #111;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      background: #000;
+      color: #fff;
+      border: 1px solid #333;
+    }
+
+    button {
+      padding: 10px;
+      margin-left: 5px;
+      background: #00ffcc;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <header>MASTER.AS</header>
+
+  <div id="chat"></div>
+
+  <footer>
+    <input id="input" placeholder="Digite sua mensagem" />
+    <button onclick="sendMessage()">Enviar</button>
+  </footer>
+
+  <script>
+    function sendMessage() {
+      const input = document.getElementById("input");
+      const chat = document.getElementById("chat");
+
+      if (input.value.trim() === "") return;
+
+      const userMsg = document.createElement("div");
+      userMsg.className = "msg-user";
+      userMsg.innerText = input.value;
+      chat.appendChild(userMsg);
+
+      const botMsg = document.createElement("div");
+      botMsg.className = "msg-bot";
+      botMsg.innerText = "MASTER.AS: pensando...";
+      chat.appendChild(botMsg);
+
+      fetch("https://master-as.onrender.com/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: input.value
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        botMsg.innerText = "MASTER.AS: " + data.reply;
+      })
+      .catch(() => {
+        botMsg.innerText = "MASTER.AS: erro ao conectar.";
+      });
+
+      input.value = "";
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+</body>
+</html>
